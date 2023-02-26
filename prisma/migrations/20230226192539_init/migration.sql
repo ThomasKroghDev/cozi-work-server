@@ -228,7 +228,7 @@ CREATE TABLE "PortfolioItem" (
     "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "portfolio_item" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
     "portfolio_pic" TEXT,
     "portfolio_pdf" TEXT,
     "portfolio_url" TEXT,

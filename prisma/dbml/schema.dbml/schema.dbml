@@ -223,7 +223,7 @@ Table PortfolioItem {
   id Int [pk, increment]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
-  portfolio_item String [not null]
+  name String [not null]
   portfolio_pic String
   portfolio_pdf String
   portfolio_url String

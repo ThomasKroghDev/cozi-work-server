@@ -4,7 +4,6 @@
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearch"]
-  output          = "../node_modules/@prisma/client"
 }
 
 datasource db {
@@ -238,7 +237,7 @@ model PortfolioItem {
   id             Int       @id @default(autoincrement())
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
-  portfolio_item String
+  name String
   portfolio_pic  String?
   portfolio_pdf  String?
   portfolio_url  String?
