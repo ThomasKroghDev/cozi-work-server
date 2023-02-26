@@ -1,0 +1,260 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              Int       @id @default(autoincrement())
+  email           String    @unique
+  username        String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  hashed_password String
+  first_name      String?
+  last_name       String?
+  phone_number    String?
+  Account         Account[]
+}
+
+model Account {
+  id                Int                 @id @default(autoincrement())
+  user_id           Int
+  user              User                @relation(fields: [user_id], references: [id])
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  profile_pic       String?
+  employed_type     String?
+  bio               String?
+  location          String?
+  website           String?
+  linkedin_url      String?
+  github_url        String?
+  twitter_url       String?
+  dribble_url       String?
+  groupsId          Int?
+  AccountGroup      AccountGroup[]
+  AccountPost       AccountPost[]
+  AccountJobListing AccountJobListing[]
+  PostComment       PostComment[]
+  Votes             Votes[]
+  Category          Category[]
+  AccountSkill      AccountSkill[]
+  AccountPortfolio  AccountPortfolio[]
+}
+
+model Group {
+  id           Int            @id @default(autoincrement())
+  name         String
+  description  String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  group_pic    String?
+  AccountGroup AccountGroup[]
+  votes        Votes[]
+}
+
+model AccountGroup {
+  id         Int     @id @default(autoincrement())
+  account_id Int
+  group_id   Int
+  account    Account @relation(fields: [account_id], references: [id])
+  group      Group   @relation(fields: [group_id], references: [id])
+}
+
+model Resume {
+  id           Int          @id @default(autoincrement())
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  resume_title String
+  resume_pic   String?
+  resume_pdf   String?
+  PostResume   PostResume[]
+}
+
+model JobListing {
+  id                Int                 @id @default(autoincrement())
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  job_title         String
+  job_pic           String?
+  job_content       String
+  job_location      String
+  job_type          String
+  job_salary        String
+  job_url           String
+  employment_type   EmploymentType
+  PostJobListing    PostJobListing[]
+  interview         Interview           @relation(fields: [interview_id], references: [id])
+  interview_id      Int
+  AccountJobListing AccountJobListing[]
+}
+
+model Interview {
+  id          Int          @id @default(autoincrement())
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  name        String
+  description String?
+  type        String
+  duration    String
+  JobListing  JobListing[]
+}
+
+model Post {
+  id             Int              @id @default(autoincrement())
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  post_title     String
+  post_pic       String?
+  post_content   String
+  PostResume     PostResume[]
+  AccountPost    AccountPost[]
+  PostJobListing PostJobListing[]
+  PostComment    PostComment[]
+  Votes          Votes[]
+  Category       Category[]
+}
+
+model PostResume {
+  id        Int    @id @default(autoincrement())
+  post_id   Int
+  resume_id Int
+  post      Post   @relation(fields: [post_id], references: [id])
+  resume    Resume @relation(fields: [resume_id], references: [id])
+}
+
+model PostJobListing {
+  id             Int        @id @default(autoincrement())
+  post_id        Int
+  job_listing_id Int
+  post           Post       @relation(fields: [post_id], references: [id])
+  job_listing    JobListing @relation(fields: [job_listing_id], references: [id])
+}
+
+model AccountPost {
+  id         Int     @id @default(autoincrement())
+  post_id    Int
+  account_id Int
+  post       Post    @relation(fields: [post_id], references: [id])
+  account    Account @relation(fields: [account_id], references: [id])
+}
+
+model AccountJobListing {
+  id             Int        @id @default(autoincrement())
+  account_id     Int
+  job_listing_id Int
+  account        Account    @relation(fields: [account_id], references: [id])
+  job_listing    JobListing @relation(fields: [job_listing_id], references: [id])
+}
+
+model PostComment {
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  comment    String
+  post_id    Int
+  account_id Int
+  post       Post     @relation(fields: [post_id], references: [id])
+  account    Account  @relation(fields: [account_id], references: [id])
+  votes      Votes[]
+}
+
+model Votes {
+  id            Int          @id @default(autoincrement())
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  up_count      Int
+  down_count    Int
+  post_id       Int
+  account_id    Int
+  post          Post         @relation(fields: [post_id], references: [id])
+  account       Account      @relation(fields: [account_id], references: [id])
+  Group         Group?       @relation(fields: [groupId], references: [id])
+  groupId       Int?
+  PostComment   PostComment? @relation(fields: [postCommentId], references: [id])
+  postCommentId Int?
+}
+
+model Category {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  name        String
+  description String?
+  creator     Account? @relation(fields: [creatorId], references: [id])
+  creatorId   Int?
+  Post        Post[]
+  Skill       Skill[]
+}
+
+model Skill {
+  id                Int            @id @default(autoincrement())
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  name              String
+  description       String?
+  years_exp         Int
+  proficiency_level Int
+  AccountSkill      AccountSkill[]
+  category          Category?      @relation(fields: [categoryId], references: [id])
+  categoryId        Int?
+}
+
+model AccountSkill {
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  account_id Int
+  skill_id   Int
+  account    Account  @relation(fields: [account_id], references: [id])
+  skill      Skill    @relation(fields: [skill_id], references: [id])
+}
+
+model Portfolio {
+  id               Int                @id @default(autoincrement())
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  portfolio_title  String
+  description      String?
+  AccountPortfolio AccountPortfolio[]
+  PortfolioItem    PortfolioItem[]
+}
+
+model PortfolioItem {
+  id             Int       @id @default(autoincrement())
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  portfolio_item String
+  portfolio_pic  String?
+  portfolio_pdf  String?
+  portfolio_url  String?
+  portfolio      Portfolio @relation(fields: [portfolio_id], references: [id])
+  portfolio_id   Int
+}
+
+model AccountPortfolio {
+  id           Int       @id @default(autoincrement())
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  account_id   Int
+  portfolio_id Int
+  account      Account   @relation(fields: [account_id], references: [id])
+  portfolio    Portfolio @relation(fields: [portfolio_id], references: [id])
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  TEMPORARY
+  INTERNSHIP
+  VOLUNTEER
+  OTHER
+}
