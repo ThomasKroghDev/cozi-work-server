@@ -1,0 +1,302 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table User {
+  id Int [pk, increment]
+  email String [unique, not null]
+  username String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  hashed_password String [not null]
+  first_name String
+  last_name String
+  phone_number String
+  Account Account [not null]
+}
+
+Table Account {
+  id Int [pk, increment]
+  user_id Int [not null]
+  user User [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  profile_pic String
+  employed_type String
+  bio String
+  location String
+  website String
+  linkedin_url String
+  github_url String
+  twitter_url String
+  dribble_url String
+  groupsId Int
+  AccountGroup AccountGroup [not null]
+  AccountPost AccountPost [not null]
+  AccountJobListing AccountJobListing [not null]
+  PostComment PostComment [not null]
+  Votes Votes [not null]
+  Category Category [not null]
+  AccountSkill AccountSkill [not null]
+  AccountPortfolio AccountPortfolio [not null]
+}
+
+Table Group {
+  id Int [pk, increment]
+  name String [not null]
+  description String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  group_pic String
+  AccountGroup AccountGroup [not null]
+  votes Votes [not null]
+}
+
+Table AccountGroup {
+  id Int [pk, increment]
+  account_id Int [not null]
+  group_id Int [not null]
+  account Account [not null]
+  group Group [not null]
+}
+
+Table Resume {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  resume_title String [not null]
+  resume_pic String
+  resume_pdf String
+  PostResume PostResume [not null]
+}
+
+Table JobListing {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  job_title String [not null]
+  job_pic String
+  job_content String [not null]
+  job_location String [not null]
+  job_type String [not null]
+  job_salary String [not null]
+  job_url String [not null]
+  employment_type EmploymentType [not null]
+  PostJobListing PostJobListing [not null]
+  interview Interview [not null]
+  interview_id Int [not null]
+  AccountJobListing AccountJobListing [not null]
+}
+
+Table Interview {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name String [not null]
+  description String
+  type String [not null]
+  duration String [not null]
+  JobListing JobListing [not null]
+}
+
+Table Post {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  post_title String [not null]
+  post_pic String
+  post_content String [not null]
+  PostResume PostResume [not null]
+  AccountPost AccountPost [not null]
+  PostJobListing PostJobListing [not null]
+  PostComment PostComment [not null]
+  Votes Votes [not null]
+  Category Category [not null]
+}
+
+Table PostResume {
+  id Int [pk, increment]
+  post_id Int [not null]
+  resume_id Int [not null]
+  post Post [not null]
+  resume Resume [not null]
+}
+
+Table PostJobListing {
+  id Int [pk, increment]
+  post_id Int [not null]
+  job_listing_id Int [not null]
+  post Post [not null]
+  job_listing JobListing [not null]
+}
+
+Table AccountPost {
+  id Int [pk, increment]
+  post_id Int [not null]
+  account_id Int [not null]
+  post Post [not null]
+  account Account [not null]
+}
+
+Table AccountJobListing {
+  id Int [pk, increment]
+  account_id Int [not null]
+  job_listing_id Int [not null]
+  account Account [not null]
+  job_listing JobListing [not null]
+}
+
+Table PostComment {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  comment String [not null]
+  post_id Int [not null]
+  account_id Int [not null]
+  post Post [not null]
+  account Account [not null]
+  votes Votes [not null]
+}
+
+Table Votes {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  up_count Int [not null]
+  down_count Int [not null]
+  post_id Int [not null]
+  account_id Int [not null]
+  post Post [not null]
+  account Account [not null]
+  Group Group
+  groupId Int
+  PostComment PostComment
+  postCommentId Int
+}
+
+Table Category {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name String [not null]
+  description String
+  creator Account
+  creatorId Int
+  Post Post [not null]
+  Skill Skill [not null]
+}
+
+Table Skill {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name String [not null]
+  description String
+  years_exp Int [not null]
+  proficiency_level Int [not null]
+  AccountSkill AccountSkill [not null]
+  category Category
+  categoryId Int
+}
+
+Table AccountSkill {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  account_id Int [not null]
+  skill_id Int [not null]
+  account Account [not null]
+  skill Skill [not null]
+}
+
+Table Portfolio {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  portfolio_title String [not null]
+  description String
+  AccountPortfolio AccountPortfolio [not null]
+  PortfolioItem PortfolioItem [not null]
+}
+
+Table PortfolioItem {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  portfolio_item String [not null]
+  portfolio_pic String
+  portfolio_pdf String
+  portfolio_url String
+  portfolio Portfolio [not null]
+  portfolio_id Int [not null]
+}
+
+Table AccountPortfolio {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  account_id Int [not null]
+  portfolio_id Int [not null]
+  account Account [not null]
+  portfolio Portfolio [not null]
+}
+
+Enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  TEMPORARY
+  INTERNSHIP
+  VOLUNTEER
+  OTHER
+}
+
+Ref: Account.user_id > User.id
+
+Ref: AccountGroup.account_id > Account.id
+
+Ref: AccountGroup.group_id > Group.id
+
+Ref: JobListing.interview_id > Interview.id
+
+Ref: PostResume.post_id > Post.id
+
+Ref: PostResume.resume_id > Resume.id
+
+Ref: PostJobListing.post_id > Post.id
+
+Ref: PostJobListing.job_listing_id > JobListing.id
+
+Ref: AccountPost.post_id > Post.id
+
+Ref: AccountPost.account_id > Account.id
+
+Ref: AccountJobListing.account_id > Account.id
+
+Ref: AccountJobListing.job_listing_id > JobListing.id
+
+Ref: PostComment.post_id > Post.id
+
+Ref: PostComment.account_id > Account.id
+
+Ref: Votes.post_id > Post.id
+
+Ref: Votes.account_id > Account.id
+
+Ref: Votes.groupId > Group.id
+
+Ref: Votes.postCommentId > PostComment.id
+
+Ref: Category.creatorId > Account.id
+
+Ref: Skill.categoryId > Category.id
+
+Ref: AccountSkill.account_id > Account.id
+
+Ref: AccountSkill.skill_id > Skill.id
+
+Ref: PortfolioItem.portfolio_id > Portfolio.id
+
+Ref: AccountPortfolio.account_id > Account.id
+
+Ref: AccountPortfolio.portfolio_id > Portfolio.id
