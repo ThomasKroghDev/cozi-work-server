@@ -8,10 +8,10 @@ Table User {
   username String
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
-  hashed_password String [not null]
-  first_name String
-  last_name String
-  phone_number String
+  hashedPassword String [not null]
+  firstName String
+  lastName String
+  phoneNumber String
   Account Account [not null]
 }
 
@@ -39,21 +39,30 @@ Table Account {
   Category Category [not null]
   AccountSkill AccountSkill [not null]
   AccountPortfolio AccountPortfolio [not null]
+  Message Message [not null]
+  AccountChat AccountChat [not null]
+  Group Group [not null]
+  Testimonial Testimonial [not null]
+  SkillReview SkillReview [not null]
 }
 
 Table Group {
   id Int [pk, increment]
-  name String [not null]
-  description String
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
+  name String [not null]
+  description String
+  Account Account
+  creatorId Int
   group_pic String
   AccountGroup AccountGroup [not null]
-  votes Votes [not null]
+  Votes Votes [not null]
 }
 
 Table AccountGroup {
   id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
   account_id Int [not null]
   group_id Int [not null]
   account Account [not null]
@@ -197,6 +206,7 @@ Table Skill {
   AccountSkill AccountSkill [not null]
   category Category
   categoryId Int
+  SkillReview SkillReview [not null]
 }
 
 Table AccountSkill {
@@ -241,6 +251,64 @@ Table AccountPortfolio {
   portfolio Portfolio [not null]
 }
 
+Table Message {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  message String [not null]
+  account_id Int [not null]
+  chat_id Int [not null]
+  account Account [not null]
+  chat Chat [not null]
+}
+
+Table Chat {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  Message Message [not null]
+  AccountChat AccountChat [not null]
+}
+
+Table AccountChat {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  account_id Int [not null]
+  chat_id Int [not null]
+  account Account [not null]
+  chat Chat [not null]
+}
+
+Table Testimonial {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name String [not null]
+  description String [not null]
+  account_id Int [not null]
+  account Account [not null]
+  Review Review
+  reviewId Int
+}
+
+Table Review {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  testimonials Testimonial [not null]
+}
+
+Table SkillReview {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  account_id Int [not null]
+  skill_id Int [not null]
+  account Account [not null]
+  skill Skill [not null]
+}
+
 Enum EmploymentType {
   FULL_TIME
   PART_TIME
@@ -252,6 +320,8 @@ Enum EmploymentType {
 }
 
 Ref: Account.user_id > User.id
+
+Ref: Group.creatorId > Account.id
 
 Ref: AccountGroup.account_id > Account.id
 
@@ -300,3 +370,19 @@ Ref: PortfolioItem.portfolio_id > Portfolio.id
 Ref: AccountPortfolio.account_id > Account.id
 
 Ref: AccountPortfolio.portfolio_id > Portfolio.id
+
+Ref: Message.account_id > Account.id
+
+Ref: Message.chat_id > Chat.id
+
+Ref: AccountChat.account_id > Account.id
+
+Ref: AccountChat.chat_id > Chat.id
+
+Ref: Testimonial.account_id > Account.id
+
+Ref: Testimonial.reviewId > Review.id
+
+Ref: SkillReview.account_id > Account.id
+
+Ref: SkillReview.skill_id > Skill.id
