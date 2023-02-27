@@ -53,25 +53,34 @@ model Account {
   Category          Category[]
   AccountSkill      AccountSkill[]
   AccountPortfolio  AccountPortfolio[]
+  Message           Message[]
+  AccountChat       AccountChat[]
+  Group             Group[]
+  Testimonial       Testimonial[]
+  SkillReview       SkillReview[]
 }
 
 model Group {
   id           Int            @id @default(autoincrement())
-  name         String
-  description  String?
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
+  name         String
+  description  String?
+  Account      Account?       @relation(fields: [creatorId], references: [id])
+  creatorId    Int?
   group_pic    String?
   AccountGroup AccountGroup[]
-  votes        Votes[]
+  Votes        Votes[]
 }
 
 model AccountGroup {
-  id         Int     @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
   account_id Int
   group_id   Int
-  account    Account @relation(fields: [account_id], references: [id])
-  group      Group   @relation(fields: [group_id], references: [id])
+  account    Account  @relation(fields: [account_id], references: [id])
+  group      Group    @relation(fields: [group_id], references: [id])
 }
 
 model Resume {
@@ -211,6 +220,7 @@ model Skill {
   AccountSkill      AccountSkill[]
   category          Category?      @relation(fields: [categoryId], references: [id])
   categoryId        Int?
+  SkillReview       SkillReview[]
 }
 
 model AccountSkill {
@@ -253,6 +263,64 @@ model AccountPortfolio {
   portfolio_id Int
   account      Account   @relation(fields: [account_id], references: [id])
   portfolio    Portfolio @relation(fields: [portfolio_id], references: [id])
+}
+
+model Message {
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  message    String
+  account_id Int
+  chat_id    Int
+  account    Account  @relation(fields: [account_id], references: [id])
+  chat       Chat     @relation(fields: [chat_id], references: [id])
+}
+
+model Chat {
+  id          Int           @id @default(autoincrement())
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  Message     Message[]
+  AccountChat AccountChat[]
+}
+
+model AccountChat {
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  account_id Int
+  chat_id    Int
+  account    Account  @relation(fields: [account_id], references: [id])
+  chat       Chat     @relation(fields: [chat_id], references: [id])
+}
+
+model Testimonial {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  name        String
+  description String
+  account_id  Int
+  account     Account  @relation(fields: [account_id], references: [id])
+  Review      Review?  @relation(fields: [reviewId], references: [id])
+  reviewId    Int?
+}
+
+model Review {
+  id           Int           @id @default(autoincrement())
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  testimonials Testimonial[]
+}
+
+model SkillReview {
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  account_id Int
+  skill_id   Int
+  account    Account  @relation(fields: [account_id], references: [id])
+  skill      Skill    @relation(fields: [skill_id], references: [id])
 }
 
 enum EmploymentType {
