@@ -15,6 +15,10 @@ generator dbml {
   provider = "prisma-dbml-generator"
   output   = "./dbml/schema.dbml"
 }
+generator crud {
+  provider = "prisma-crud-generator"
+  output = "./generated/#{model}"
+}
 
 model User {
   id              Int       @id @default(autoincrement())
