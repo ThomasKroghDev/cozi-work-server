@@ -9,6 +9,7 @@ import {
 
 import { PaginationInterface } from '@prisma-utils/nestjs-prisma';
 import { err, ok, Result } from 'neverthrow';
+import { CreateUserRequestDto } from './dto/createUserRequest.dto';
 
 @Injectable()
 export class AuthRepository {
@@ -30,10 +31,10 @@ export class AuthRepository {
     return Prisma.validator<Prisma.UserFindManyArgs>()({});
   }
 
-  validateCreateUser(data: Prisma.UserCreateInput) {
+  validateCreateUser(data: CreateUserRequestDto) {
     return Prisma.validator<Prisma.UserCreateInput>()({
       email: data.email,
-      hashed_password: data.hashed_password,
+      hashed_password: data.password,
     });
   }
 
@@ -105,7 +106,7 @@ export class AuthRepository {
     }
   }
 
-  async create(data: Prisma.UserCreateInput): Promise<Result<User, Error>> {
+  async create(data: CreateUserRequestDto): Promise<Result<User, Error>> {
     try {
       const result = await this.prismaService.user.create({
         data: this.validateCreateUser(data),

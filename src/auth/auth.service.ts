@@ -19,6 +19,8 @@ import { ConfigService } from '@nestjs/config';
 import { AxiosResponse } from 'axios';
 import { map, Observable, tap } from 'rxjs';
 import { compare, hash, genSalt } from 'bcrypt';
+import { CreateUserRequestDto } from './dto/createUserRequest.dto';
+import { UpdateUserRequestDto } from './dto/updateUserRequest.dto';
 
 @Injectable()
 export class AuthService {
@@ -31,19 +33,9 @@ export class AuthService {
     return await compare(password, hashedPassword);
   }
 
-  async hashingPassword(data: {
-    hashed_password: any;
-    email?: string;
-    username?: string | null | undefined;
-    createdAt?: string | Date | undefined;
-    updatedAt?: string | Date | undefined;
-    first_name?: string | null | undefined;
-    last_name?: string | null | undefined;
-    phone_number?: string | null | undefined;
-    Account?: Prisma.AccountCreateNestedManyWithoutUserInput | undefined;
-  }) {
+  async hashingPassword(password: string): Promise<string> {
     const salt = await genSalt(10);
-    return await hash(data.hashed_password, salt);
+    return await hash(password, salt);
   }
 
   async getAll(
@@ -56,13 +48,13 @@ export class AuthService {
     return await this.authRepository.getById(id);
   }
 
-  async create(data: Prisma.UserCreateInput): Promise<Result<User, Error>> {
+  async create(data: CreateUserRequestDto): Promise<Result<User, Error>> {
     return await this.authRepository.create(data);
   }
 
   async update(
     id: number,
-    data: Prisma.UserUpdateInput,
+    data: UpdateUserRequestDto,
   ): Promise<Result<User, Error>> {
     return await this.authRepository.update(id, data);
   }
@@ -92,22 +84,42 @@ export class AuthService {
     return err(new UnauthorizedException('Invalid credentials'));
   }
 
-  async register(data: Prisma.UserCreateInput): Promise<Result<User, Error>> {
+  async register(data: CreateUserRequestDto): Promise<Result<User, Error>> {
     const result = await this.authRepository.getByEmail(data.email);
 
     if (!result.unwrapOr(undefined)) {
-      const hashedPassword = await this.hashingPassword(data);
+      const hashedPassword = await this.hashingPassword(data.password);
 
       const newUser = await this.authRepository.create({
         ...data,
-        hashed_password: hashedPassword,
+        password: hashedPassword,
       });
       return newUser;
     }
     return result;
   }
 
-  async validateUser(id: number): Promise<Result<User, Error>> {
-    return await this.authRepository.getById(id);
+  async validateUser(
+    email: string,
+    password: string,
+  ): Promise<Result<User, Error>> {
+    const result = await this.authRepository.getByEmail(email);
+
+    const user = result.unwrapOr(undefined);
+
+    if (user) {
+      const isPasswordValid = await this.comparePassword(
+        password,
+        user.hashed_password,
+      );
+
+      if (!isPasswordValid) {
+        return err(new UnauthorizedException('Invalid credentials'));
+      }
+
+      return result;
+    }
+
+    return err(new UnauthorizedException('Invalid credentials'));
   }
 }
